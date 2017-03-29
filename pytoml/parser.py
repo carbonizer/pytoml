@@ -205,9 +205,13 @@ def _p_basicstr_content(s, content=_basicstr_re):
 _key_re = re.compile(r'[0-9a-zA-Z-_]+')
 def _p_key(s):
     with s:
-        s.expect('"')
-        r = _p_basicstr_content(s, _basicstr_re)
-        s.expect('"')
+        if s.consume('"'):
+            r = _p_basicstr_content(s, _basicstr_re)
+            s.expect('"')
+        else:
+            s.expect('\'')
+            r = s.expect_re(_litstr_re).group(0)
+            s.expect('\'')
         return r
     return s.expect_re(_key_re).group(0)
 
